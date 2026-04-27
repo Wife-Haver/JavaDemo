@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.Array;
-
+import com.badlogic.gdx.Screen;
 
 public class Main implements ApplicationListener {
 
@@ -38,7 +38,7 @@ public class Main implements ApplicationListener {
         player = new Player();
         bullets = new Array<>();
         enemySpawnTimer = 0;
-        enemySpawnInterval = 2f;
+        enemySpawnInterval = 0.5f;
         enemies = new Array<>();
     }
 
@@ -81,6 +81,16 @@ public class Main implements ApplicationListener {
                 bullet.dispose();
                 bullets.removeIndex(i);
             }
+            for (int j = enemies.size - 1; j >= 0; j--) {
+                Enemy enemy = enemies.get(j);
+                if (bullet.getRectangle().overlaps(enemy.getRectangle())) {
+                    bullet.dispose();
+                    bullets.removeIndex(i);
+                    enemy.dispose();
+                    enemies.removeIndex(j);
+                    break; // bullet is consumed, stop checking it
+                }
+            }
         }
         enemySpawnTimer += Gdx.graphics.getDeltaTime();
         if (enemySpawnTimer >= enemySpawnInterval){
@@ -94,6 +104,10 @@ public class Main implements ApplicationListener {
                 enemy.dispose();
                 enemies.removeIndex(i);
             }
+
+
+
+
         }
 
         // Clamp x to values between 0 and worldWidth

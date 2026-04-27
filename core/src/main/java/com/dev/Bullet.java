@@ -38,4 +38,9 @@ public class Bullet extends Sprite {
     }
 
 
+    public Rectangle getRectangle() {
+        return bulletRectangle;
+    }
+
+
 }

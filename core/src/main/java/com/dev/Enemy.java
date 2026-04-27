@@ -48,5 +48,8 @@ public class Enemy extends Sprite {
     public boolean isOutOfBounds(float worldWidth, float worldHeight) {
         return getX() + getWidth() < 0;  // enemies only move left, so only check left edge
     }
+    public Rectangle getRectangle() {
+        return enemyRectangle;
+    }
 
 }
