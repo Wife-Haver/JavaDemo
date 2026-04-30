@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -24,6 +25,10 @@ public class GameScreen implements Screen {
     Array<Enemy> enemies;
     float enemySpawnTimer;
     float enemySpawnInterval;
+    int playerHealth;
+    Texture heartTexture;
+    boolean isGameOver;
+
 
     public GameScreen(Main game) {
         this.game = game;
@@ -37,7 +42,10 @@ public class GameScreen implements Screen {
         bullets = new Array<>();
         enemies = new Array<>();
         enemySpawnTimer = 0;
-        enemySpawnInterval = 0.5f;
+        enemySpawnInterval = 1;//1 second
+        playerHealth = 5;
+        heartTexture = new Texture("heart.png");
+        heartTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     }
 
     @Override
@@ -52,7 +60,7 @@ public class GameScreen implements Screen {
 
     private void input() {
         player.input();
-        if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             Bullet bullet = new Bullet();
             bullet.setPosition(
                 player.getX() + player.getWidth(),
@@ -81,12 +89,13 @@ public class GameScreen implements Screen {
                 if (bullet.getRectangle().overlaps(enemy.getRectangle())) {
                     bullet.dispose();
                     bullets.removeIndex(i);
-                    enemy.dispose();
-                    enemies.removeIndex(j);
+                    enemy.startDying();
                     break;
                 }
             }
         }
+
+
 
         enemySpawnTimer += Gdx.graphics.getDeltaTime();
         if (enemySpawnTimer >= enemySpawnInterval) {
@@ -97,8 +106,12 @@ public class GameScreen implements Screen {
         for (int i = enemies.size - 1; i >= 0; i--) {
             Enemy enemy = enemies.get(i);
             enemy.update();
-            if (enemy.isOutOfBounds(worldWidth, worldHeight)) {
+            if (enemy.isDeadAndGone()) {
                 enemy.dispose();
+                enemies.removeIndex(i);
+            } else if (!enemy.isDying && enemy.isOutOfBounds(worldWidth, worldHeight)) {
+                enemy.dispose();
+                updateHealth(-1);
                 enemies.removeIndex(i);
             }
         }
@@ -118,13 +131,27 @@ public class GameScreen implements Screen {
         backgroundRegion.setRegion(0, 0, (int)(worldWidth * 32), (int)(worldHeight * 32));
 
         spriteBatch.begin();
+
         spriteBatch.draw(backgroundRegion, 0, 0, worldWidth, worldHeight);
         player.draw(spriteBatch);
         for (Bullet bullet : bullets) bullet.draw(spriteBatch);
         for (Enemy enemy : enemies) enemy.draw(spriteBatch);
+
+        for (int i = 0;i<playerHealth;i++){
+            spriteBatch.draw(heartTexture, 0.1f + (i * 0.6f), 5.3f, 0.5f, 0.5f);
+        }
+
+
         spriteBatch.end();
     }
 
+    private void updateHealth(int amt){
+        playerHealth += amt;
+        if (playerHealth <= 0){
+            game.setScreen(new LoseScreen(game));
+
+        }
+    }
     private void spawnEnemy() {
         String[] enemyTypes = {"fast bug", "zippy bug", "worm"};
         String randomEnemy = enemyTypes[MathUtils.random(enemyTypes.length - 1)];
@@ -144,9 +171,11 @@ public class GameScreen implements Screen {
         backgroundTexture.dispose();
         spriteBatch.dispose();
         player.dispose();
+        heartTexture.dispose();
     }
 
     @Override public void pause() {}
     @Override public void resume() {}
-    @Override public void hide() {}
+    @Override public void hide() {
+    }
 }

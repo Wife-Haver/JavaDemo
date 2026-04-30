@@ -13,7 +13,8 @@ public class Enemy extends Sprite {
     float delta;
     float enemySpeed;
     Rectangle enemyRectangle;
-
+    boolean isDying = false;
+    float fadeTimer = 1f; // seconds to fade out
 
     public Enemy(String enemy_type){
         switch (enemy_type){
@@ -32,13 +33,27 @@ public class Enemy extends Sprite {
         }
         set(new Sprite(enemyTexture));
         setSize(1, 1);
-
-        enemyRectangle = new Rectangle(getX(),getY(),getWidth(),getHeight());
+        enemyRectangle = new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
+
     public void update(){
         delta = Gdx.graphics.getDeltaTime();
-        translateX(-enemySpeed * delta);
-        enemyRectangle.set(getX(),getY(),getWidth(),getHeight());
+
+        if (isDying) {
+            fadeTimer -= delta;
+            setAlpha(fadeTimer); // fade out over 1 second
+        } else {
+            translateX(-enemySpeed * delta);
+            enemyRectangle.set(getX(), getY(), getWidth(), getHeight());
+        }
+    }
+
+    public void startDying() {
+        isDying = true;
+    }
+
+    public boolean isDeadAndGone() {
+        return isDying && fadeTimer <= 0;
     }
 
     public void dispose(){
@@ -46,10 +61,10 @@ public class Enemy extends Sprite {
     }
 
     public boolean isOutOfBounds(float worldWidth, float worldHeight) {
-        return getX() + getWidth() < 0;  // enemies only move left, so only check left edge
+        return getX() + getWidth() < 0;
     }
+
     public Rectangle getRectangle() {
         return enemyRectangle;
     }
-
 }

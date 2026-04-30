@@ -10,15 +10,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class MainMenuScreen implements Screen {
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 
+public class LoseScreen implements Screen {
     final Main game;
     public SpriteBatch batch;
     public BitmapFont font;
     public FitViewport viewport;
 
-
-    public MainMenuScreen(Main game){
+    public LoseScreen(Main game){
         this.game = game;
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -27,12 +29,16 @@ public class MainMenuScreen implements Screen {
             Texture.TextureFilter.Nearest
         );
         viewport = new FitViewport(25, 10);
-
-
         font.setUseIntegerPositions(false);
-        //font.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight());
         font.getData().setScale(0.1f);
         font.setColor(Color.BLACK);
+        // prints out used memory. should hover around 18mb used
+//        MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
+//        MemoryUsage heap = memBean.getHeapMemoryUsage();
+
+        //System.out.println("Used: " + heap.getUsed() / 1024 / 1024 + " MB");
+        //System.out.println("Max:  " + heap.getMax()  / 1024 / 1024 + " MB");
+
     }
 
     @Override
@@ -42,31 +48,29 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(Color.WHITE);
+        ScreenUtils.clear(Color.GRAY);
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
 
         batch.begin();
-        //draw text. Remember that x and y are in meters
 
-        font.draw(batch, "Welcome to Shooter Game!!! ", 1, 8);
-        font.draw(batch, "Click any key to Begin!!", 1, 5);
+
+        font.draw(batch, "You Lost!!! ", 1, 8);
+        font.draw(batch, "Press any key to Restart!!", 1, 5);
 
 
         batch.end();
         if (Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
             game.setScreen(new GameScreen(game));
-            dispose();
         }
-
-
     }
 
     @Override
     public void resize(int width, int height) {
         if (width <= 0 || height <= 0) return;
         viewport.update(width, height, true);
+
     }
 
     @Override
@@ -86,7 +90,6 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
-        batch.dispose();
-        font.dispose();
+
     }
 }
