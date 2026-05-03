@@ -50,6 +50,7 @@ public class Enemy extends Sprite {
 
     public void startDying() {
         isDying = true;
+        enemyRectangle.set(0, 0, 0, 0);
     }
 
     public boolean isDeadAndGone() {
