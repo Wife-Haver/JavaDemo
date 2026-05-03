@@ -9,6 +9,8 @@ This project was generated with a template including simple application launcher
 -Spacebar to shoot
 -dont let the enemies reach the other end of the screen
 
+##Itch.io
+https://wifehaveritch.itch.io/java-shooter-demo
 
 ## Platforms
 
