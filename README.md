@@ -4,6 +4,12 @@ A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://git
 
 This project was generated with a template including simple application launchers and an empty `ApplicationListener` implementation.
 
+## How to Play
+-WASD to move
+-Spacebar to shoot
+-dont let the enemies reach the other end of the screen
+
+
 ## Platforms
 
 - `core`: Main module with the application logic shared by all platforms.
